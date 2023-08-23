@@ -16,7 +16,7 @@ def folder_maker(path,name):
         os.mkdir(path + '/' + name)
     else:
         print(f'{name} already existed on the specified path, continuing other operation...')
-    
+           
 if __name__ == "__main__":
 
     folder_maker('..','Input')
