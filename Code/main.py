@@ -45,36 +45,29 @@ if __name__ == "__main__":
         img = cv2.imread(inpath)
         img = resizer(img,452)
         folder_maker('..\\Output\\PW_Image', file)
-        for theta in range(-30,31.5):
-            img_expanded = expander(img_mutated)
-            img_rotated = rotator(img_expanded)
+        outpath = '..\\Output\\PW_Image\\' + file + '\\' 
+        img_center = pers_fixer(img, 'top', 0)
+        for theta in range(-30,31,5):
+            img_expanded = expander(img_center)
+            img_rotated = rotator(img_expanded,theta)
             cropped_img = cropper(img_rotated)
-        outpath = '..\\Output\\PW_Image\\' + file + '\\'
-        cv2.imwrite(outpath +'center_0.png',img)
+            outpath_center = outpath + 'center_0' + '_' + str(theta) + '.png'
+            cv2.imwrite(outpath_center,cropped_img)
         for x in orient:
             for i in range(5, 26, 5):
                 img_mutated = pers_fixer(img, x, i)
                 for theta in range(-30,31,5):
                     img_expanded = expander(img_mutated)
-                    img_rotated = rotator(img_expanded)
+                    img_rotated = rotator(img_expanded,theta)
                     cropped_img = cropper(img_rotated)
-                    file_name = x + '_' + str(i) + '_' + theta + '.png'
+                    file_name = x + '_' + str(i) + '_' + str(theta) + '.png'
                     outpath_for = outpath + file_name
                     print(file_name)
                     cv2.imwrite(outpath_for,cropped_img)
-
-  
-
-
-
-    
-                
 print('Done')
                 
 
                 
                 
-
-        
 
     
