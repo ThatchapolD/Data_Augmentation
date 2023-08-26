@@ -43,9 +43,9 @@ if __name__ == "__main__":
     orient = ['top','left','right','bot']
     folder_maker('..\Output',"PW_Image")
     
-    for file in os.listdir('..\Input'):
+    for file in img_list:
         inpath = '..\\Input\\' + file
-        img = cv2.imread(inpath)
+        img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
         img = resizer(img,452)
         folder_maker('..\\Output\\PW_Image', file)
         outpath = '..\\Output\\PW_Image\\' + file + '\\' 
@@ -67,6 +67,28 @@ if __name__ == "__main__":
                     outpath_for = outpath + file_name
                     print(file_name)
                     cv2.imwrite(outpath_for,cropped_img)
+
+    print('Transparent Image Batches Generated!')
+    print('Stacking will now begin...')
+    
+    #The triple for loop of death.
+    bg_path = '../Background'
+    now = time.strftime("(%Y-%m-%d)%H-%M", time.localtime())
+    folder_maker('../Output',now)
+    for folder in os.listdir("../Output/PW_Image"): # Folder selection
+        path_PW = '../Output/PW_Image/' + folder 
+        for file in os.listdir(path_PW): # for each file inside the folder
+            for bg in os.listdir(bg_path): # stack with the 10 backgrouds prepared
+                bg_file = bg_path + '/' + bg
+                fg_file = path_PW + '/' + file
+                bg_uint = cv2.imread(bg_file,cv2.IMREAD_UNCHANGED)
+                fg_uint = cv2.imread(fg_file,cv2.IMREAD_UNCHANGED)
+                img_stacked,x,y,h,w = stacker(fg_uint,bg_uint)
+                out_name = folder + ';' + str(x) + ';' + str(y) + ';' + str(w) + ';' + str(h) + ';' + bg
+                out_dest = '../Output/' + now + '/' + out_name
+                print(out_name)
+                cv2.imwrite(out_dest,img_stacked)
+                    
 print('Done')
                 
 

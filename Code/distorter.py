@@ -108,7 +108,7 @@ def stacker(img_fore,img_back):
     fore_sec = cv2.cvtColor(big_mask,cv2.COLOR_GRAY2RGB)
     fore_sec[yoff : (yoff + img_fore.shape[0]), xoff : (xoff + img_fore.shape[1])] = img_fore[:,:,:3]
     img_stacked = cv2.add(fore_sec,back_sec)
-    return img_stacked
+    return img_stacked,xoff,yoff,img_fore.shape[0],img_fore.shape[1]
 
 def resizer(img,size):
     max_side = np.argmax(img.shape[:2])
