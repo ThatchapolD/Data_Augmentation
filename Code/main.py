@@ -1,8 +1,11 @@
 import os
+import shutil
 import cv2
 from distorter import pers_fixer, cropper, expander, rotator, stacker, resizer
 import time
-import splitfolders
+import json
+import math
+import numpy as np
 
 def hello_world():
     print('Hello World')
@@ -91,13 +94,83 @@ if __name__ == "__main__":
                 cv2.imwrite(out_dest,img_stacked)
     
     print('Image Ready to be annotated!')
-    print('Splitting Files in to Traing batch...')
+    print('Splitting Files in to Training batch...')
     
-    splitfolders.ratio('Data', output="output", seed=1337, ratio=(.8, 0.1,0.1)) 
+    file_amount = len(os.listdir('../Output/' + now))
+    percent_train = 70
+    percent_valid = 20
+    percent_test = 10
+    train_size = int(math.floor((percent_train*0.01)*file_amount))
+    valid_size = int(math.floor((percent_valid*0.01)*file_amount))
+    test_size = int(math.floor((percent_test*0.01)*file_amount))
+    excess = (file_amount - train_size - valid_size - test_size)
+    train_size = train_size + excess
+    shuffler = np.zeros(train_size).tolist()
+    tempo = np.zeros(valid_size)
+    tempo.fill(1)
+    shuffler = np.append(shuffler,tempo)
+    tempo = np.zeros(test_size)
+    tempo.fill(2)
+    shuffler = np.append(shuffler,tempo)
+    np.random.shuffle(shuffler)
+    files = os.listdir('../Output/' + now)
+    folder_maker('../Output/' + now,'test')
+    folder_maker('../Output/' + now,'train')
+    folder_maker('../Output/' + now,'valid')
+    i = 0
+    for file in files:
+            if shuffler[i] == 0:
+                batch = 'train'
+            elif shuffler[i] == 1:
+                batch = 'valid'
+            elif shuffler[i] == 2:
+                batch = 'test'
+            shutil.move('../Output/' + now + '/' + file, '../Output/' + now + '/' + shuffler[i] )
+            i = i + 1
 
     print('Annotating...')
+        
+    anno = {}
+    anno['info'] = {}
+    anno['licenses'] = []
+    anno['categories'] = []
+    anno['images'] = []
+    anno['annotations'] = []
     
-print('Done')
+    desc = 'Dataset from data augmentation script'
+    
+    anno['info'] = {'description': desc , 'date_created': time.strftime("%Y/%m/%d", time.localtime())}
+    i = 0
+    categories = os.listdir("../Output/PW_Image")
+    for folder in categories:
+        anno['categories'][str(i)] = {}
+        anno['categories'][str(i)]= {'id' : i, 'supercategory': "none", 'name': folder}
+        i = i + 1
+    i = 0    
+    for section in os.listdir('../Output' + now):
+        anno_tempo = anno.copy()
+        for anno_img in os.listdir('../Output/' + now + '/' + section):
+            img = cv2.imread('../Output/' + now + '/' + section + '/' + anno_img)
+            param = anno_img.split(';')
+            bbox = [int(param[1]),int(param[2]),int(param[3]),int(param[4]),]
+            anno_tempo['images'].append({'id' : i, 
+                                         'file_name': anno_img, 
+                                         'height': img.shape(0),
+                                         'width': img.shape(1)})
+            anno_tempo['annotations'].append({'id': i , 
+                                              'image_id': i, 
+                                              'category_id': categories.index(param[0]), 
+                                              'bbox': bbox, 
+                                              'iscrowd': 0, 
+                                              'area': (int(param[3])*int(param[4])),
+                                              'segmentation': []})
+            i = i + 1
+        with open("_annotations.coco.json", "w") as outfile:
+            json.dump(anno, outfile)
+        
+    print('Done')
+            
+
                 
 
                 
