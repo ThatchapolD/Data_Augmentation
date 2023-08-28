@@ -88,9 +88,9 @@ if __name__ == "__main__":
                 bg_uint = cv2.imread(bg_file,cv2.IMREAD_UNCHANGED)
                 fg_uint = cv2.imread(fg_file,cv2.IMREAD_UNCHANGED)
                 img_stacked,x,y,h,w = stacker(fg_uint,bg_uint)
-                out_name = folder + ';' + str(x) + ';' + str(y) + ';' + str(w) + ';' + str(h) + ';' + bg
+                out_name = folder + ';' + str(x) + ';' + str(y) + ';' + str(w) + ';' + str(h) + ';' + bg + file
                 out_dest = '../Output/' + now + '/' + out_name
-                print(out_name)
+                print(file + ' | ' + bg)
                 cv2.imwrite(out_dest,img_stacked)
     
     print('Image Ready to be annotated!')
@@ -125,7 +125,7 @@ if __name__ == "__main__":
                 batch = 'valid'
             elif shuffler[i] == 2:
                 batch = 'test'
-            shutil.move('../Output/' + now + '/' + file, '../Output/' + now + '/' + shuffler[i] )
+            shutil.move('../Output/' + now + '/' + file, '../Output/' + now + '/' + batch )
             i = i + 1
 
     print('Annotating...')
@@ -143,11 +143,10 @@ if __name__ == "__main__":
     i = 0
     categories = os.listdir("../Output/PW_Image")
     for folder in categories:
-        anno['categories'][str(i)] = {}
-        anno['categories'][str(i)]= {'id' : i, 'supercategory': "none", 'name': folder}
+        anno['categories'].append({'id' : i, 'supercategory': "none", 'name': folder})
         i = i + 1
     i = 0    
-    for section in os.listdir('../Output' + now):
+    for section in os.listdir('../Output/' + now):
         anno_tempo = anno.copy()
         for anno_img in os.listdir('../Output/' + now + '/' + section):
             img = cv2.imread('../Output/' + now + '/' + section + '/' + anno_img)
@@ -155,8 +154,8 @@ if __name__ == "__main__":
             bbox = [int(param[1]),int(param[2]),int(param[3]),int(param[4]),]
             anno_tempo['images'].append({'id' : i, 
                                          'file_name': anno_img, 
-                                         'height': img.shape(0),
-                                         'width': img.shape(1)})
+                                         'height': img.shape[0],
+                                         'width': img.shape[1]})
             anno_tempo['annotations'].append({'id': i , 
                                               'image_id': i, 
                                               'category_id': categories.index(param[0]), 
@@ -164,10 +163,10 @@ if __name__ == "__main__":
                                               'iscrowd': 0, 
                                               'area': (int(param[3])*int(param[4])),
                                               'segmentation': []})
+            print(str(i)+'/'+str(file_amount))
             i = i + 1
-        with open("_annotations.coco.json", "w") as outfile:
+        with open("../Output/" + now + "/" + section + "/_annotations.coco.json", "w") as outfile:
             json.dump(anno, outfile)
-        
     print('Done')
             
 
