@@ -2,6 +2,7 @@ import os
 import cv2
 from distorter import pers_fixer, cropper, expander, rotator, stacker, resizer
 import time
+import splitfolders
 
 def hello_world():
     print('Hello World')
@@ -88,7 +89,14 @@ if __name__ == "__main__":
                 out_dest = '../Output/' + now + '/' + out_name
                 print(out_name)
                 cv2.imwrite(out_dest,img_stacked)
-                    
+    
+    print('Image Ready to be annotated!')
+    print('Splitting Files in to Traing batch...')
+    
+    splitfolders.ratio('Data', output="output", seed=1337, ratio=(.8, 0.1,0.1)) 
+
+    print('Annotating...')
+    
 print('Done')
                 
 
