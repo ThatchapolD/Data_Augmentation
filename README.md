@@ -1,4 +1,4 @@
-To use This Pissass Script:
+cdTo use This Pissass Script:
 
 1: create a virtual environtment (anywhere really)/
 2: cd to here(where this README.md is)/
