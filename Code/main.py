@@ -5,6 +5,7 @@ from distorter import pers_fixer, cropper, expander, rotator, stacker, resizer
 import time
 import json
 import math
+import copy
 import numpy as np
 
 def hello_world():
@@ -145,9 +146,10 @@ if __name__ == "__main__":
     for folder in categories:
         anno['categories'].append({'id' : i, 'supercategory': "none", 'name': folder})
         i = i + 1
+    
     i = 0    
     for section in os.listdir('../Output/' + now):
-        anno_tempo = anno.copy()
+        anno_tempo = copy.deepcopy(anno)
         for anno_img in os.listdir('../Output/' + now + '/' + section):
             img = cv2.imread('../Output/' + now + '/' + section + '/' + anno_img)
             param = anno_img.split(';')
@@ -166,7 +168,7 @@ if __name__ == "__main__":
             print(str(i)+'/'+str(file_amount))
             i = i + 1
         with open("../Output/" + now + "/" + section + "/_annotations.coco.json", "w") as outfile:
-            json.dump(anno, outfile)
+            json.dump(anno_tempo, outfile)
     print('Done')
             
 
