@@ -121,7 +121,7 @@ def resizer(img,size):
     
     
 if __name__ == '__main__': # Experimental Zone
-    img = cv2.imread(r'..\Input\fa0d2780ab161375.jpg')
+    img = cv2.imread('../Input/test.png')
     img = cv2.resize(img,(512,362))
     # cv2.imshow('towa', img)
     # cv2.waitKey(0)
