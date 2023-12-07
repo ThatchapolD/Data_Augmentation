@@ -13,29 +13,6 @@ def pers_fixer(img,side,crimp): # Main Function to be used in Main.py (img = ima
                              [img.shape[1] - 1, 0], 
                              [0, img.shape[0] - 1], 
                              [img.shape[1] - 1, img.shape[0] - 1]])
-    # match(side):
-    #     case 'top': 
-    #         dstPer = np.float32([[((img.shape[1] - 1)*(crimp/100)), ((img.shape[0] - 1)*0)], 
-    #                          [((img.shape[1] - 1)*((100 - crimp)/100)), ((img.shape[0] - 1)*0)], 
-    #                          [((img.shape[1] - 1)*0), ((img.shape[0] - 1)*1)], 
-    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*1)]])
-    #     case 'left': 
-    #         dstPer = np.float32([[((img.shape[1] - 1)*0), ((img.shape[0] - 1)*(crimp/100))], 
-    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*0)], 
-    #                          [((img.shape[1] - 1)*0), ((img.shape[0] - 1)*((100 - crimp)/100))], 
-    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*1)]])
-    #     case 'right':
-    #         dstPer = np.float32([[((img.shape[1] - 1)*0), ((img.shape[0] - 1)*0)], 
-    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*(crimp/100))], 
-    #                          [((img.shape[1] - 1)*0), ((img.shape[0] - 1)*1)], 
-    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*((100 - crimp)/100))]])
-    #     case 'bot':
-    #         dstPer = np.float32([[((img.shape[1] - 1)*0), ((img.shape[0] - 1)*0)], 
-    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*0)], 
-    #                          [((img.shape[1] - 1)*(crimp/100)), ((img.shape[0] - 1)*1)], 
-    #                          [((img.shape[1] - 1)*((100 - crimp)/100)), ((img.shape[0] - 1)*1)]])
-    #     case _:
-    #         print('Invalid Input.')
     if(side == 'top'):
         dstPer = np.float32([[((img.shape[1] - 1)*(crimp/100)), ((img.shape[0] - 1)*0)], 
                             [((img.shape[1] - 1)*((100 - crimp)/100)), ((img.shape[0] - 1)*0)], 
@@ -183,3 +160,26 @@ if __name__ == '__main__': # Experimental Zone
             break
     cv2.destroyAllWindows()
 
+    # match(side):
+    #     case 'top': 
+    #         dstPer = np.float32([[((img.shape[1] - 1)*(crimp/100)), ((img.shape[0] - 1)*0)], 
+    #                          [((img.shape[1] - 1)*((100 - crimp)/100)), ((img.shape[0] - 1)*0)], 
+    #                          [((img.shape[1] - 1)*0), ((img.shape[0] - 1)*1)], 
+    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*1)]])
+    #     case 'left': 
+    #         dstPer = np.float32([[((img.shape[1] - 1)*0), ((img.shape[0] - 1)*(crimp/100))], 
+    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*0)], 
+    #                          [((img.shape[1] - 1)*0), ((img.shape[0] - 1)*((100 - crimp)/100))], 
+    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*1)]])
+    #     case 'right':
+    #         dstPer = np.float32([[((img.shape[1] - 1)*0), ((img.shape[0] - 1)*0)], 
+    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*(crimp/100))], 
+    #                          [((img.shape[1] - 1)*0), ((img.shape[0] - 1)*1)], 
+    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*((100 - crimp)/100))]])
+    #     case 'bot':
+    #         dstPer = np.float32([[((img.shape[1] - 1)*0), ((img.shape[0] - 1)*0)], 
+    #                          [((img.shape[1] - 1)*1), ((img.shape[0] - 1)*0)], 
+    #                          [((img.shape[1] - 1)*(crimp/100)), ((img.shape[0] - 1)*1)], 
+    #                          [((img.shape[1] - 1)*((100 - crimp)/100)), ((img.shape[0] - 1)*1)]])
+    #     case _:
+    #         print('Invalid Input.')
