@@ -95,135 +95,134 @@ if __name__ == "__main__":
     orient = ['top','left','right','bot']
     folder_maker('..\\Output\\' + outdirfilename,"Fore")
     
-    # for file in img_list:
-    #     inpath = '..\\Input\\' + file
-    #     img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
-    #     img = resizer(img,452)
-    #     folder_maker('..\\Output\\PW_Image', file)
-    #     outpath = '..\\Output\\PW_Image\\' + file + '\\' 
-    #     img_center = pers_fixer(img, 'top', 0)
-    #     for theta in range(-30,31,5):
-    #         img_expanded = expander(img_center)
-    #         img_rotated = rotator(img_expanded,theta)
-    #         cropped_img = cropper(img_rotated)
-    #         outpath_center = outpath + 'center_0' + '_' + str(theta) + '.png'
-    #         cv2.imwrite(outpath_center,cropped_img)
-    #     for x in orient:
-    #         for i in range(5, 26, 5):
-    #             img_mutated = pers_fixer(img, x, i)
-    #             for theta in range(-30,31,5):
-    #                 img_expanded = expander(img_mutated)
-    #                 img_rotated = rotator(img_expanded,theta)
-    #                 cropped_img = cropper(img_rotated)
-    #                 file_name = x + '_' + str(i) + '_' + str(theta) + '.png'
-    #                 outpath_for = outpath + file_name
-    #                 print(file_name)
-    #                 cv2.imwrite(outpath_for,cropped_img)
-
-    # print('Transparent Image Batches Generated!')
-    # print('Stacking will now begin...')
-    
-    # #The triple for loop of death.
-    # bg_path = '../Background'
-    # now = time.strftime("(%Y-%m-%d)%H-%M", time.localtime())
-    # folder_maker('../Output',now)
-    # for folder in os.listdir("../Output/PW_Image"): # Folder selection
-    #     path_PW = '../Output/PW_Image/' + folder 
-    #     for file in os.listdir(path_PW): # for each file inside the folder
-    #         for bg in os.listdir(bg_path): # stack with the 10 backgrouds prepared
-    #             bg_file = bg_path + '/' + bg
-    #             fg_file = path_PW + '/' + file
-    #             bg_uint = cv2.imread(bg_file,cv2.IMREAD_UNCHANGED)
-    #             fg_uint = cv2.imread(fg_file,cv2.IMREAD_UNCHANGED)
-    #             img_stacked,x,y,h,w = stacker(fg_uint,bg_uint)
-    #             out_name = folder + ';' + str(x) + ';' + str(y) + ';' + str(w) + ';' + str(h) + ';' + bg + file
-    #             out_dest = '../Output/' + now + '/' + out_name
-    #             print(file + ' | ' + bg)
-    #             cv2.imwrite(out_dest,img_stacked)
-    
-    # print('Image Ready to be annotated!')
-    # print('Splitting Files in to Training batch...')
-    
-    # file_amount = len(os.listdir('../Output/' + now))
-    # percent_train = 70
-    # percent_valid = 20
-    # percent_test = 10
-    # train_size = int(math.floor((percent_train*0.01)*file_amount))
-    # valid_size = int(math.floor((percent_valid*0.01)*file_amount))
-    # test_size = int(math.floor((percent_test*0.01)*file_amount))
-    # excess = (file_amount - train_size - valid_size - test_size)
-    # train_size = train_size + excess
-    # shuffler = np.zeros(train_size).tolist()
-    # tempo = np.zeros(valid_size)
-    # tempo.fill(1)
-    # shuffler = np.append(shuffler,tempo)
-    # tempo = np.zeros(test_size)
-    # tempo.fill(2)
-    # shuffler = np.append(shuffler,tempo)
-    # np.random.shuffle(shuffler)
-    # files = os.listdir('../Output/' + now)
-    # folder_maker('../Output/' + now,'test')
-    # folder_maker('../Output/' + now,'train')
-    # folder_maker('../Output/' + now,'valid')
-    # i = 0
-    # for file in files:
-    #         if shuffler[i] == 0:
-    #             batch = 'train'
-    #         elif shuffler[i] == 1:
-    #             batch = 'valid'
-    #         elif shuffler[i] == 2:
-    #             batch = 'test'
-    #         shutil.move('../Output/' + now + '/' + file, '../Output/' + now + '/' + batch )
-    #         i = i + 1
-
-    # print('Annotating...')
+    for class_name in class_list:
+        folder_maker('..\\Output\\' + outdirfilename + "\\Fore",class_name)
         
-    # anno = {}
-    # anno['info'] = {}
-    # anno['licenses'] = []
-    # anno['categories'] = []
-    # anno['images'] = []
-    # anno['annotations'] = []
+    for dir in os.listdir("..\\Input"):
+        if (len(os.listdir("..\\Input\\" + dir)) == 0):
+            pass
+        else:
+            for images in os.listdir("..\\Input\\" + dir):
+                if (images.endswith('.jpg') or images.endswith('.png') or images.endswith('.jpeg') or images.endswith('.PNG')):
+                            inpath = "..\\Input\\" + dir + '\\' + images
+                            img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
+                            img = resizer(img,452)
+                            img_center = pers_fixer(img, 'top', 0)
+                            for theta in range(-30,31,5):
+                                img_expanded = expander(img_center)
+                                img_rotated = rotator(img_expanded,theta)
+                                cropped_img = cropper(img_rotated)
+                                folder_maker('..\\Output\\' + outdirfilename + "\\Fore\\" + dir,images)
+                                outpath_center = '..\\Output\\' + outdirfilename + "\\Fore\\" + dir + '\\' + images + '\\center_0' + '_' + str(theta) + '.png'
+                                print('center_0' + '_' + str(theta) + '.png')
+                                cv2.imwrite(outpath_center,cropped_img)
+                            for x in orient:
+                                for i in range(5, 26, 5):
+                                    img_mutated = pers_fixer(img, x, i)
+                                    for theta in range(-30,31,5):
+                                        img_expanded = expander(img_mutated)
+                                        img_rotated = rotator(img_expanded,theta)
+                                        cropped_img = cropper(img_rotated)
+                                        file_name = x + '_' + str(i) + '_' + str(theta) + '.png'
+                                        outpath_for = '..\\Output\\' + outdirfilename + "\\Fore\\"  + dir + '\\' + images + '\\' + file_name
+                                        print(file_name)
+                                        cv2.imwrite(outpath_for,cropped_img)
+    print('Transparent Image Batches Generated!')
     
-    # desc = 'Dataset from data augmentation script'
+    bg_path = '../Background'
+    folder_maker('..\\Output\\' + outdirfilename,"Dataset")
+    for dir in os.listdir("..\\Output\\" + outdirfilename + "\\Fore"):
+        if (len(os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir)) == 0):
+            pass
+        else:
+            for imset in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir):
+                print('=====' + imset)
+                for img in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset):
+                    print(img)
+                    for bg in os.listdir(bg_path):
+                        bg_file = bg_path + '/' + bg
+                        fg_file = "..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset + "\\" + img
+                        bg_uint = cv2.imread(bg_file,cv2.IMREAD_UNCHANGED)
+                        fg_uint = cv2.imread(fg_file,cv2.IMREAD_UNCHANGED)
+                        img_stacked,x,y,h,w = stacker(fg_uint,bg_uint)
+                        out_name = dir + ';' + str(x) + ';' + str(y) + ';' + str(w) + ';' + str(h) + ';' + bg + imset + img
+                        out_dest = '..\\Output\\' + outdirfilename + "\\Dataset\\" + out_name 
+                        cv2.imwrite(out_dest,img_stacked)
     
-    # anno['info'] = {'description': desc , 'date_created': time.strftime("%Y/%m/%d", time.localtime())}
-    # i = 0
-    # categories = os.listdir("../Output/PW_Image")
-    # for folder in categories:
-    #     anno['categories'].append({'id' : i, 'supercategory': "none", 'name': folder})
-    #     i = i + 1
+    print('Shuffling..')
     
-    # i = 0    
-    # for section in os.listdir('../Output/' + now):
-    #     anno_tempo = copy.deepcopy(anno)
-    #     for anno_img in os.listdir('../Output/' + now + '/' + section):
-    #         img = cv2.imread('../Output/' + now + '/' + section + '/' + anno_img)
-    #         param = anno_img.split(';')
-    #         bbox = [int(param[1]),int(param[2]),int(param[3]),int(param[4]),]
-    #         anno_tempo['images'].append({'id' : i, 
-    #                                      'file_name': anno_img, 
-    #                                      'height': img.shape[0],
-    #                                      'width': img.shape[1]})
-    #         anno_tempo['annotations'].append({'id': i , 
-    #                                           'image_id': i, 
-    #                                           'category_id': categories.index(param[0]), 
-    #                                           'bbox': bbox, 
-    #                                           'iscrowd': 0, 
-    #                                           'area': (int(param[3])*int(param[4])),
-    #                                           'segmentation': []})
-    #         print(str(i)+'/'+str(file_amount))
-    #         i = i + 1
-    #     with open("../Output/" + now + "/" + section + "/_annotations.coco.json", "w") as outfile:
-    #         json.dump(anno_tempo, outfile)
-    # print('Done')
+    file_amount = len(os.listdir('..\\Output\\' + outdirfilename + "\\Dataset"))
+    
+    percent_train = 70
+    percent_valid = 20
+    percent_test = 10
+    
+    train_size = int(math.floor((percent_train*0.01)*file_amount))
+    valid_size = int(math.floor((percent_valid*0.01)*file_amount))
+    test_size = int(math.floor((percent_test*0.01)*file_amount))
+    excess = (file_amount - train_size - valid_size - test_size)
+    train_size = train_size + excess
+    shuffler = np.zeros(train_size).tolist()
+    tempo = np.zeros(valid_size)
+    tempo.fill(1)
+    shuffler = np.append(shuffler,tempo)
+    tempo = np.zeros(test_size)
+    tempo.fill(2)
+    shuffler = np.append(shuffler,tempo)
+    np.random.shuffle(shuffler)
+    files = os.listdir('..\\Output\\' + outdirfilename + "\\Dataset")
+    folder_maker('..\\Output\\' + outdirfilename + "\\Dataset",'test')
+    folder_maker('..\\Output\\' + outdirfilename + "\\Dataset",'train')
+    folder_maker('..\\Output\\' + outdirfilename + "\\Dataset",'valid')
+    i = 0
+    for file in files:
+            if shuffler[i] == 0:
+                batch = 'train'
+            elif shuffler[i] == 1:
+                batch = 'valid'
+            elif shuffler[i] == 2:
+                batch = 'test'
+            shutil.move('..\\Output\\' + outdirfilename + "\\Dataset\\" + file, '..\\Output\\' + outdirfilename + "\\Dataset\\" + batch )
+            i = i + 1
             
-
-                
-
-                
-                
-
-        
-
+    print('Annotating...')
+    anno = {}
+    anno['info'] = {}
+    anno['licenses'] = []
+    anno['categories'] = []
+    anno['images'] = []
+    anno['annotations'] = []
     
+    desc = 'Dataset from data augmentation script'
+    
+    anno['info'] = {'description': desc , 'date_created': time.strftime("%Y/%m/%d", time.localtime())}
+    i = 0
+    for class_name in class_list:
+        anno['categories'].append({'id' : i, 'supercategory': "none", 'name': class_name})
+        i = i + 1
+        
+    i = 0    
+    for section in os.listdir('..\\Output\\' + outdirfilename + "\\Dataset"):
+        anno_tempo = copy.deepcopy(anno)
+        for anno_img in os.listdir('..\\Output\\' + outdirfilename + "\\Dataset\\" + section):
+            img = cv2.imread('..\\Output\\' + outdirfilename + "\\Dataset\\" + section + '\\' + anno_img)
+            param = anno_img.split(';')
+            bbox = [int(param[1]),int(param[2]),int(param[3]),int(param[4]),]
+            anno_tempo['images'].append({'id' : i, 
+                                            'file_name': anno_img, 
+                                            'height': img.shape[0],
+                                            'width': img.shape[1]})
+            anno_tempo['annotations'].append({'id': i , 
+                                                'image_id': i, 
+                                                'category_id': class_list.index(param[0]), 
+                                                'bbox': bbox, 
+                                                'iscrowd': 0, 
+                                                'area': (int(param[3])*int(param[4])),
+                                                'segmentation': []})
+            print(str(i)+'/'+str(file_amount))
+            i = i + 1
+        with open('..\\Output\\' + outdirfilename + "\\Dataset\\" + section + "/_annotations.coco.json", "w") as outfile:
+            json.dump(anno_tempo, outfile)
+        
+    shutil.rmtree('..\\Output\\' + outdirfilename + "\\Fore")
+    print("Done!")
