@@ -9,8 +9,12 @@ To use This Pissass Script<br />
 
 [0:08 29/08/2023] The Script is done<br />
 Run the script and do what it said(The script will automatically make folder)<br />
-Once it's done the dataset should be in Output folder<br />
+Then, Put your Shit inside coresponding folder(The folder is named as all the dataset)<br />
+Let the program Unga Bunga your shit<br />
+Finished COCO format dataset will be in output<be />
 <br />
-PS: FUCK YOU<br />
+PS: FUCK YOU and DONT YOU DARE FUKING ASK ME WHAT NAME SHOULD THE DATASET BE<br />
 <br />
+<br />
+Sincere Fuckingly<br />
 Pruek Suwankosai<br />
