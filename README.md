@@ -8,6 +8,7 @@ To use This Pissass Script<br />
 6: This should work<br />
 
 [0:08 29/08/2023] The Script is done<br />
+[2:29 14/12/2023] The Script is upgraded, now with Progress bar<br />
 Run the script and do what it said(The script will automatically make folder)<br />
 Then, Put your Shit inside coresponding folder(The folder is named as all the dataset)<br />
 Let the program Unga Bunga your shit<br />
