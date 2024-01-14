@@ -23,6 +23,11 @@ def folder_maker(path,name):
         # print(f'{name} already existed on the specified path, continuing other operation...')
         pass
 
+def default_preset_maker():
+    df = open("..\\Preset\\preset.txt", "x")
+    df = open("..\\Preset\\preset.txt", "a")
+    df.write("25,5|30,5|-1")
+
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
     Call in a loop to create terminal progress bar
@@ -72,7 +77,7 @@ if __name__ == "__main__":
                 "memo2010front","memo2010back","memo2011front","memo2011back","memo2012.10front","memo2012.10back","memo2012.kqfront","memo2012.kqback","memo2015front","memo2015back",
                 "memo2016.kfront","memo2016.kback","memo2016.qfront","memo2016.qback","memo2017front","memo2017back","memo2019front","memo2019back"]
     
-    pog_all = 2 + len(class_list)
+    pog_all = 3 + len(class_list)
     
     printProgressBar(0, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
     
@@ -80,6 +85,11 @@ if __name__ == "__main__":
     pog += 1
     printProgressBar(pog , pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
     folder_maker('..','Output')
+    pog += 1
+    printProgressBar(pog , pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    folder_maker('..','Preset')
+    if(os.path.exists('..\\Preset\\Preset.txt') == False):
+        default_preset_maker()
     pog += 1
     printProgressBar(pog , pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
     
@@ -124,7 +134,125 @@ if __name__ == "__main__":
     print(".")
     print("=====================================================================================")
     
-    pog_all = len(img_list) * 21 * 13
+    per_flag = False
+    rot_flag = False
+    blur_flag = False
+    per_select = False
+    rot_select = False
+    blur_select = False
+    
+    print("PLEASE SELECT AUGEMENTATION PROCESS:")
+    print("1: PERSPECTIVE WARP | 2:ROTATION ")
+    print("3: BLUR             | 4:PRESET   ")
+    while(1):
+        inpt = input('INPUT:')
+        if inpt.find('4') != -1 and len(inpt) == 1:
+            df = open("..\\Preset\\preset.txt", "r")
+            preset = df.read()
+            df.close()
+            preset = preset.split('|')
+            if(preset[0] != -1):
+                per_flag = True
+                per_set = preset[0].split(',')
+                per_max = int(per_set[0])
+                per_step = int(per_set[1])
+            if(preset[1] != -1):
+                rot_flag = True
+                rot_set = preset[1].split(',')
+                rot_max = int(rot_set[0])
+                rot_step = int(rot_set[1])
+            if(preset[2] != -1):
+                blur_flag_flag = True
+                blur_set = preset[2].split(',')
+                max_kernel_size = int(rot_set[0])
+            break   
+        elif inpt.find('4') != -1 and len(inpt) != 1:
+            print("DIRECTION : Invalid Input...")
+        elif len(inpt) == 0:
+            print('DIRECTION : Please Enter Input...')
+        else:
+            if inpt.find('1') != -1:
+                per_select = True
+                per_flag = True
+            if inpt.find('2') != -1:
+                rot_select = True
+                rot_flag = True
+            if inpt.find('3') != -1:
+                blur_select = True
+                blur_flag = True
+            break
+    print("=====================================================================================")
+    print(".")
+    print(".")
+    print("=====================================================================================")
+    if per_select == True:
+        print("PERSEPECTIVE WARP")
+        per_max = int(input("MAXIMUM PERCENT OF DISTORTION :"))
+        per_step = int(input("STEP :"))
+        print("=====================================================================================")
+        print(".")
+        print(".")
+        print("=====================================================================================")
+    if rot_select == True:
+        print("ROTATION")
+        rot_max = int(input("MAXIMUM DEGREES OF ROTATION :"))
+        rot_step = int(input("STEP :"))
+        print("=====================================================================================")
+        print(".")
+        print(".")
+        print("=====================================================================================")
+    if blur_select == True:
+        print('BLUR')
+        max_kernel_size = int(input("MAX KERNEL SIZE :"))
+        print("=====================================================================================")
+        print(".")
+        print(".")
+        print("=====================================================================================")
+    
+    per_range = []
+    rot_range = []
+    blur_range = []
+    
+    if per_flag == True:
+        per_range = np.arange(per_step,per_max+1,per_step)
+    if rot_flag == True:
+        rot_range = np.arange(-rot_max,rot_max+1,rot_step)
+    if blur_flag == True:
+        blur_range = ((np.arange(1,max_kernel_size+1,1))*2)-1
+        blur_range = np.insert(blur_range,0,0)
+    bg_range = os.listdir('..\\Background')
+    
+    print("CONFIRMATION...")
+    print("IMAGES : " + str(len(img_list)))
+    print("PERSEPECTIVE WARP :" + str(len(per_range)*4))
+    print("ROTATION : " + str(len(rot_range)))
+    print("BLUR : " + str(len(blur_range)))
+    print("BACKGROUND : " + str(len(bg_range)))
+    if len(rot_range) == 0:
+        r = 1
+    else:
+        r = len(rot_range)
+    if len(blur_range) == 0:
+        b = 1
+    else:
+        b = len(blur_range)
+    print("TOTAL IMAGES :" + str(len(img_list)*((len(per_range)*4)+1)*r*b*len(bg_range)))
+    print(".")
+    print(".")
+    while(1):
+        selection = input('Proceed(Y/n) :')
+        if selection == 'Y':
+            break
+        elif selection == 'n':
+            exit()
+        else: pass
+    
+    print("=====================================================================================")
+    print(".")
+    print(".")
+    print("=====================================================================================")
+    
+    pog_all = (len(img_list)*((len(per_range)*4)+1))*r*b
     pog = 0
     
     print("DISTORTING IMAGES...")
@@ -136,37 +264,89 @@ if __name__ == "__main__":
     for class_name in class_list:
         folder_maker('..\\Output\\' + outdirfilename + "\\Fore",class_name)
         
-    for dir in os.listdir("..\\Input"):
-        if (len(os.listdir("..\\Input\\" + dir)) == 0):
-            pass
-        else:
-            for images in os.listdir("..\\Input\\" + dir):
-                if (images.endswith('.jpg') or images.endswith('.png') or images.endswith('.jpeg') or images.endswith('.PNG')):
-                            inpath = "..\\Input\\" + dir + '\\' + images
-                            img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
-                            img = resizer(img,452)
-                            img_center = pers_fixer(img, 'top', 0)
-                            for theta in range(-30,31,5):
-                                img_expanded = expander(img_center)
-                                img_rotated = rotator(img_expanded,theta)
-                                cropped_img = cropper(img_rotated)
+    #purity
+    if True == True:
+        for dir in os.listdir("..\\Input"):
+            if (len(os.listdir("..\\Input\\" + dir)) == 0):
+                pass
+            else:
+                for images in os.listdir("..\\Input\\" + dir):
+                    if (images.endswith('.jpg') or images.endswith('.png') or images.endswith('.jpeg') or images.endswith('.PNG')):
+                                inpath = "..\\Input\\" + dir + '\\' + images
+                                img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
+                                img = resizer(img,452)
+                                img_center = pers_fixer(img, 'top', 0)
+                                cropped_img = cropper(img_center)
                                 folder_maker('..\\Output\\' + outdirfilename + "\\Fore\\" + dir,images)
-                                outpath_center = '..\\Output\\' + outdirfilename + "\\Fore\\" + dir + '\\' + images + '\\center_0' + '_' + str(theta) + '.png'
+                                outpath_center = '..\\Output\\' + outdirfilename + "\\Fore\\" + dir + '\\' + images + '\\center_0.png'
                                 cv2.imwrite(outpath_center,cropped_img)
                                 pog += 1
                                 printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    
+    #perspective warp
+    if per_flag == True:
+        for dir in os.listdir("..\\Output\\" + outdirfilename + "\\Fore"):
+            if (len(os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir)) == 0):
+                pass
+            else:
+                for imset in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir):
+                    for imgs in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset):
+                            inpath = "..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset + '\\' + imgs
                             for x in orient:
-                                for i in range(5, 26, 5):
-                                    img_mutated = pers_fixer(img, x, i)
-                                    for theta in range(-30,31,5):
-                                        img_expanded = expander(img_mutated)
-                                        img_rotated = rotator(img_expanded,theta)
-                                        cropped_img = cropper(img_rotated)
-                                        file_name = x + '_' + str(i) + '_' + str(theta) + '.png'
-                                        outpath_for = '..\\Output\\' + outdirfilename + "\\Fore\\"  + dir + '\\' + images + '\\' + file_name
-                                        cv2.imwrite(outpath_for,cropped_img)
-                                        pog += 1
-                                        printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+                                for i in per_range:
+                                    img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
+                                    img_mutated = pers_fixer(img, x, int(i))
+                                    cropped_img = cropper(img_mutated)
+                                    file_name = x + '_' + str(i) + '.png'
+                                    outpath_for = '..\\Output\\' + outdirfilename + "\\Fore\\"  + dir + '\\' + imset + '\\' + file_name
+                                    cv2.imwrite(outpath_for,cropped_img)
+                                    pog += 1
+                                    printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    
+    #rotation
+    if rot_flag == True:
+        for dir in os.listdir("..\\Output\\" + outdirfilename + "\\Fore"):
+            if (len(os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir)) == 0):
+                pass
+            else:
+                for imset in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir):
+                    for imgs in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset):
+                        inpath = "..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset + '\\' + imgs
+                        for theta in rot_range:
+                            img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
+                            img_expanded = expander(img)
+                            img_rotated = rotator(img_expanded,theta) 
+                            cropped_img = cropper(img_rotated)                    
+                            file_name = str(theta) + 'deg_' + imgs
+                            outpath_for = '..\\Output\\' + outdirfilename + "\\Fore\\"  + dir + '\\' + imset + '\\' + file_name
+                            cv2.imwrite(outpath_for,cropped_img)
+                            pog += 1
+                            # printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+                        os.remove(inpath)
+                        pog -= 1
+                        printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
+    #blur
+    if blur_flag == True:
+        for dir in os.listdir("..\\Output\\" + outdirfilename + "\\Fore"):
+            if (len(os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir)) == 0):
+                pass
+            else:
+                for imset in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir):
+                    for imgs in os.listdir("..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset):
+                        inpath = "..\\Output\\" + outdirfilename + "\\Fore\\" + dir + '\\' + imset + '\\' + imgs
+                        for kernel in blur_range:
+                            img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
+                            if kernel != 0:
+                                cv2.GaussianBlur(img,(int(kernel),int(kernel)),0)                   
+                            file_name = 'k' + str(kernel) + '_' + imgs
+                            outpath_for = '..\\Output\\' + outdirfilename + "\\Fore\\"  + dir + '\\' + imset + '\\' + file_name
+                            cv2.imwrite(outpath_for,cropped_img)
+                            pog += 1
+                            # printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
+                        os.remove(inpath)
+                        pog -= 1
+                        printProgressBar(pog, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)                     
                                         
     print("=====================================================================================")
     print(".")
@@ -174,7 +354,7 @@ if __name__ == "__main__":
     print("=====================================================================================")
     
     pog = 0
-    pog_all = pog_all * 10
+    pog_all = pog_all * len(bg_range)
     
     print("STACKING IMAGES...")
     printProgressBar(0, pog_all, prefix = 'Progress:', suffix = 'Complete', length = 50)
