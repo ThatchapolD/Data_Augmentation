@@ -274,7 +274,7 @@ if __name__ == "__main__":
                     if (images.endswith('.jpg') or images.endswith('.png') or images.endswith('.jpeg') or images.endswith('.PNG')):
                                 inpath = "..\\Input\\" + dir + '\\' + images
                                 img = cv2.imread(inpath,cv2.IMREAD_UNCHANGED)
-                                img = resizer(img,452)
+                                img = resizer(img,565)
                                 img_center = pers_fixer(img, 'top', 0)
                                 cropped_img = cropper(img_center)
                                 folder_maker('..\\Output\\' + outdirfilename + "\\Fore\\" + dir,images)
