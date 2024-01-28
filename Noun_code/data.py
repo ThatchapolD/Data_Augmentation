@@ -1,5 +1,8 @@
 import os
+import copy
+import json
 import cv2
+import time
 import numpy as np
 from PIL import Image
 from sklearn.model_selection import train_test_split
@@ -120,7 +123,80 @@ def split_data(input_folder, output_folder, target_width=300, random_state=None)
                     image_with_bbox = draw_bounding_box(image.copy(), [0, 0, 1, 1])  # Replace with actual bounding box coordinates
                     cv2.imwrite(output_filename, image_with_bbox)
 
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
+
 if __name__ == "__main__":
     output_folder = "Noon_folder/final_output"
 
     split_data("Noon_folder/input_images", output_folder, target_width=300, random_state=42)
+    
+    
+    file_amount  = 0
+    for foldername, subfolders, filenames in os.walk(output_folder):
+            file_amount += len(filenames)
+    print(f"TOTAL AMOUNT OF FILES : {file_amount}")
+    print('ANNOTATING...')
+    printProgressBar(0, file_amount, prefix = 'Progress:', suffix = 'Complete', length = 50)
+    
+    anno = {}
+    anno['info'] = {}
+    anno['licenses'] = []
+    anno['categories'] = []
+    anno['images'] = []
+    anno['annotations'] = []
+    
+    desc = 'Dataset from data augmentation script'
+    
+    anno['info'] = {'description': desc , 'date_created': time.strftime("%Y/%m/%d", time.localtime())}
+    i = 0
+    for class_name in class_list:
+        anno['categories'].append({'id' : i, 'supercategory': "none", 'name': class_name})
+        i = i + 1
+        
+    i = 0    
+    for section in os.listdir(output_folder):
+        anno_tempo = copy.deepcopy(anno)
+        for anno_img in os.listdir(os.path.join(output_folder,section)):
+            img = cv2.imread(os.path.join(os.path.join(output_folder,section),anno_img))
+            param = anno_img.split('_')
+            bbox = [0,0,img.shape[0],img.shape[1]]
+            anno_tempo['images'].append({'id' : i, 
+                                            'file_name': anno_img, 
+                                            'height': img.shape[0],
+                                            'width': img.shape[1]})
+            anno_tempo['annotations'].append({'id': i , 
+                                                'image_id': i, 
+                                                'category_id': class_list.index(param[0]), 
+                                                'bbox': bbox, 
+                                                'iscrowd': 0, 
+                                                'area': (int(img.shape[0])*int(img.shape[1])),
+                                                'segmentation': []})
+            i = i + 1
+            printProgressBar(i, file_amount, prefix = 'Progress:', suffix = 'Complete', length = 50)
+        with open(os.path.join(output_folder,section) + "\\_annotations.coco.json", "w") as outfile:
+            json.dump(anno_tempo, outfile)
+
+    print("=====================================================================================")
+    print(".")
+    print(".")
+    print("Data Augmentation Done. Check Output folder.")
+    
